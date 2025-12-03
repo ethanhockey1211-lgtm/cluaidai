@@ -1,0 +1,110 @@
+name: Norta CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-and-test-api:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore Norta.Api/Norta.Api.csproj
+
+    - name: Build
+      run: dotnet build Norta.Api/Norta.Api.csproj --configuration Release --no-restore
+
+    - name: Test
+      run: dotnet test Norta.Tests/Norta.Tests.csproj --configuration Release --no-build --verbosity normal
+
+    - name: Publish
+      run: dotnet publish Norta.Api/Norta.Api.csproj --configuration Release --no-build --output ./publish
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: norta-api
+        path: ./publish
+
+  build-docker:
+    runs-on: ubuntu-latest
+    needs: build-and-test-api
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Norta.Api/Dockerfile
+        push: true
+        tags: |
+          ${{ secrets.DOCKER_USERNAME }}/norta-api:latest
+          ${{ secrets.DOCKER_USERNAME }}/norta-api:${{ github.sha }}
+
+  build-maui-android:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Install MAUI workload
+      run: dotnet workload install maui
+
+    - name: Restore dependencies
+      run: dotnet restore cluaidai/cluaidai.csproj
+
+    - name: Build Android
+      run: dotnet build cluaidai/cluaidai.csproj -c Release -f net9.0-android
+
+    - name: Upload Android artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: norta-android
+        path: cluaidai/bin/Release/net9.0-android/*-Signed.apk
+
+  build-maui-ios:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Install MAUI workload
+      run: dotnet workload install maui
+
+    - name: Restore dependencies
+      run: dotnet restore cluaidai/cluaidai.csproj
+
+    - name: Build iOS
+      run: dotnet build cluaidai/cluaidai.csproj -c Release -f net9.0-ios

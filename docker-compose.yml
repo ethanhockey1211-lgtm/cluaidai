@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: norta-postgres
+    environment:
+      POSTGRES_DB: norta
+      POSTGRES_USER: norta
+      POSTGRES_PASSWORD: norta_password_change_in_production
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - norta-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Norta.Api/Dockerfile
+    container_name: norta-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - UsePostgreSQL=true
+      - ConnectionStrings__Postgres=Host=postgres;Database=norta;Username=norta;Password=norta_password_change_in_production
+      - Jwt__Key=NortaProductionSecretKeyChangeThis123!
+      - Storage__Provider=Local
+    ports:
+      - "5000:80"
+    depends_on:
+      - postgres
+    networks:
+      - norta-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  norta-network:
+    driver: bridge

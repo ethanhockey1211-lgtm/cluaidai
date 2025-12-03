@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:cluaidai.ViewModels"
+             x:Class="cluaidai.Views.LoginPage"
+             x:DataType="vm:LoginViewModel"
+             BackgroundColor="{StaticResource DarkBackground}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20" VerticalOptions="Center">
+
+            <Label Text="Norta"
+                   FontSize="48"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource TextPrimary}"
+                   HorizontalOptions="Center"
+                   Margin="0,40,0,20"/>
+
+            <Frame Style="{StaticResource GlassCard}">
+                <VerticalStackLayout Spacing="16">
+
+                    <Label Text="{Binding Title}"
+                           Style="{StaticResource PrimaryLabel}"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+
+                    <Entry Placeholder="Email"
+                           Text="{Binding Email}"
+                           Keyboard="Email"
+                           Style="{StaticResource GlassEntry}"/>
+
+                    <Entry Placeholder="Password"
+                           Text="{Binding Password}"
+                           IsPassword="True"
+                           Style="{StaticResource GlassEntry}"/>
+
+                    <Entry Placeholder="Display Name"
+                           Text="{Binding DisplayName}"
+                           Style="{StaticResource GlassEntry}"
+                           IsVisible="{Binding IsRegisterMode}"/>
+
+                    <Label Text="{Binding ErrorMessage}"
+                           TextColor="{StaticResource AccentPink}"
+                           IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}"
+                           HorizontalOptions="Center"/>
+
+                    <Button Text="{Binding IsRegisterMode, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Register|Login'}"
+                            Command="{Binding LoginCommand}"
+                            Style="{StaticResource AccentButton}"
+                            IsVisible="{Binding IsRegisterMode, Converter={StaticResource InvertedBoolConverter}}"/>
+
+                    <Button Text="Register"
+                            Command="{Binding RegisterCommand}"
+                            Style="{StaticResource AccentButton}"
+                            IsVisible="{Binding IsRegisterMode}"/>
+
+                    <Button Text="{Binding IsRegisterMode, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Need an account? Register|Have an account? Login'}"
+                            Command="{Binding ToggleModeCommand}"
+                            Style="{StaticResource GlassButton}"/>
+
+                    <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                      Color="{StaticResource AccentBlue}"
+                                      IsVisible="{Binding IsBusy}"/>
+
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

@@ -268,6 +268,31 @@ public class ApiService
 
         return null;
     }
+
+    public async Task<string?> UploadImageAsync(byte[] imageBytes, string fileName)
+    {
+        using var stream = new MemoryStream(imageBytes);
+        var contentType = GetContentType(fileName);
+        return await UploadImageDirectAsync(stream, fileName, contentType);
+    }
+
+    private static string GetContentType(string fileName)
+    {
+        var extension = Path.GetExtension(fileName)?.ToLowerInvariant();
+        return extension switch
+        {
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            ".webp" => "image/webp",
+            _ => "image/jpeg"
+        };
+    }
+
+    public async Task LogoutAsync()
+    {
+        await _authService.LogoutAsync();
+    }
 }
 
 public class AuthResponse

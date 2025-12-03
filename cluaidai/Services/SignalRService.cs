@@ -13,10 +13,16 @@ public class SignalRService
     public event EventHandler<Message>? MessageReceived;
     public event EventHandler<Message>? MessageSent;
     public event EventHandler<Notification>? NotificationReceived;
+    public event Action<Message>? OnMessageReceived;
 
     public SignalRService(AuthService authService)
     {
         _authService = authService;
+    }
+
+    public async Task StartAsync()
+    {
+        await ConnectAsync();
     }
 
     public async Task ConnectAsync()
@@ -33,6 +39,7 @@ public class SignalRService
         _chatConnection.On<Message>("ReceiveMessage", (message) =>
         {
             MessageReceived?.Invoke(this, message);
+            OnMessageReceived?.Invoke(message);
         });
 
         _chatConnection.On<Message>("MessageSent", (message) =>

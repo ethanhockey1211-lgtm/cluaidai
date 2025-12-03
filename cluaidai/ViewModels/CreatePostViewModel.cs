@@ -96,8 +96,8 @@ public partial class CreatePostViewModel : BaseViewModel
 
         try
         {
-            var success = await _apiService.CreatePostAsync(Caption, ImageUrl);
-            if (success)
+            var post = await _apiService.CreatePostAsync(Caption, ImageUrl);
+            if (post != null)
             {
                 await Shell.Current.DisplayAlert("Success", "Post created successfully!", "OK");
                 await Shell.Current.GoToAsync("..");

@@ -42,14 +42,8 @@
                     <Label Text="Norta"
                            FontSize="56"
                            FontAttributes="Bold"
-                           HorizontalOptions="Center">
-                        <Label.TextColor>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                <GradientStop Color="{StaticResource AccentBlue}" Offset="0.0" />
-                                <GradientStop Color="{StaticResource AccentPink}" Offset="1.0" />
-                            </LinearGradientBrush>
-                        </Label.TextColor>
-                    </Label>
+                           TextColor="{StaticResource AccentBlue}"
+                           HorizontalOptions="Center"/>
                     <Label Text="Connect. Share. Inspire."
                            FontSize="16"
                            TextColor="{StaticResource TextSecondary}"

@@ -125,4 +125,16 @@ public partial class FeedViewModel : BaseViewModel
         IsRefreshing = true;
         await LoadPostsAsync();
     }
+
+    [RelayCommand]
+    private async Task CreatePostAsync()
+    {
+        await Shell.Current.GoToAsync("createpost");
+    }
+
+    [RelayCommand]
+    private async Task NavigateToSearchAsync()
+    {
+        await Shell.Current.GoToAsync("search");
+    }
 }

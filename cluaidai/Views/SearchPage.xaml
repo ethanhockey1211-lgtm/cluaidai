@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:cluaidai.ViewModels"
+             xmlns:models="clr-namespace:cluaidai.Models"
+             x:Class="cluaidai.Views.SearchPage"
+             x:DataType="vm:SearchViewModel"
+             Title="Search"
+             BackgroundColor="{StaticResource DarkBackground}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Search Bar -->
+        <Frame Grid.Row="0" Style="{StaticResource GlassCard}" Margin="12">
+            <Border StrokeShape="RoundRectangle 12"
+                   StrokeThickness="1"
+                   Stroke="{StaticResource GlassBorder}"
+                   BackgroundColor="{StaticResource GlassBackground}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" Padding="12,8">
+                    <Label Grid.Column="0"
+                          Text="🔍"
+                          FontSize="20"
+                          VerticalOptions="Center"/>
+                    <Entry Grid.Column="1"
+                          Placeholder="Search users..."
+                          Text="{Binding SearchQuery}"
+                          TextColor="{StaticResource TextPrimary}"
+                          PlaceholderColor="{StaticResource TextSecondary}"
+                          VerticalOptions="Center"/>
+                </Grid>
+            </Border>
+        </Frame>
+
+        <!-- Search Results -->
+        <CollectionView Grid.Row="1"
+                       ItemsSource="{Binding SearchResults}"
+                       SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:User">
+                    <Frame Style="{StaticResource GlassCard}" Margin="12,4">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, Path=SelectUserCommand}"
+                                CommandParameter="{Binding .}"/>
+                        </Frame.GestureRecognizers>
+
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+
+                            <!-- Avatar -->
+                            <Border StrokeShape="RoundRectangle 30"
+                                   StrokeThickness="0"
+                                   HeightRequest="60"
+                                   WidthRequest="60">
+                                <Image Source="{Binding AvatarUrl}"
+                                      Aspect="AspectFill"/>
+                            </Border>
+
+                            <!-- User Info -->
+                            <VerticalStackLayout Grid.Column="1"
+                                               VerticalOptions="Center"
+                                               Spacing="4">
+                                <Label Text="{Binding DisplayName}"
+                                      Style="{StaticResource PrimaryLabel}"
+                                      FontSize="17"
+                                      FontAttributes="Bold"/>
+                                <Label Text="{Binding Bio}"
+                                      Style="{StaticResource SecondaryLabel}"
+                                      FontSize="14"
+                                      LineBreakMode="TailTruncation"
+                                      MaxLines="1"
+                                      IsVisible="{Binding Bio, Converter={StaticResource IsNotNullOrEmptyConverter}}"/>
+                                <HorizontalStackLayout Spacing="12">
+                                    <Label Text="{Binding FollowersCount, StringFormat='{0} followers'}"
+                                          Style="{StaticResource SecondaryLabel}"
+                                          FontSize="12"/>
+                                    <Label Text="{Binding PostsCount, StringFormat='{0} posts'}"
+                                          Style="{StaticResource SecondaryLabel}"
+                                          FontSize="12"/>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+
+                            <!-- Follow Button -->
+                            <Button Grid.Column="2"
+                                   Text="{Binding IsFollowing, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Following|Follow'}"
+                                   Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, Path=ToggleFollowCommand}"
+                                   CommandParameter="{Binding .}"
+                                   Style="{Binding IsFollowing, Converter={StaticResource BoolToTextConverter}, ConverterParameter='{StaticResource GlassButton}|{StaticResource AccentButton}'}"
+                                   BackgroundColor="{Binding IsFollowing, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Transparent|{StaticResource AccentBlue}'}"
+                                   FontSize="13"
+                                   Padding="16,8"
+                                   VerticalOptions="Center"/>
+
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   Spacing="16"
+                                   Padding="40"
+                                   IsVisible="{Binding SearchQuery, Converter={StaticResource IsNotNullOrEmptyConverter}}">
+                    <Label Text="🔍"
+                          FontSize="72"
+                          HorizontalOptions="Center"/>
+                    <Label Text="No users found"
+                          Style="{StaticResource PrimaryLabel}"
+                          FontSize="20"
+                          FontAttributes="Bold"
+                          HorizontalOptions="Center"/>
+                    <Label Text="Try a different search term"
+                          Style="{StaticResource SecondaryLabel}"
+                          FontSize="16"
+                          HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+        </CollectionView>
+
+        <!-- Default State -->
+        <VerticalStackLayout Grid.Row="1"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           Spacing="16"
+                           Padding="40"
+                           IsVisible="{Binding SearchQuery, Converter={StaticResource InvertedBoolConverter}}">
+            <Label Text="👥"
+                  FontSize="72"
+                  HorizontalOptions="Center"/>
+            <Label Text="Find people to follow"
+                  Style="{StaticResource PrimaryLabel}"
+                  FontSize="20"
+                  FontAttributes="Bold"
+                  HorizontalOptions="Center"/>
+            <Label Text="Search for users by name"
+                  Style="{StaticResource SecondaryLabel}"
+                  FontSize="16"
+                  HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+
+        <!-- Loading Indicator -->
+        <ActivityIndicator Grid.Row="1"
+                          IsRunning="{Binding IsSearching}"
+                          Color="{StaticResource AccentBlue}"
+                          IsVisible="{Binding IsSearching}"
+                          HeightRequest="50"
+                          WidthRequest="50"
+                          HorizontalOptions="Center"
+                          VerticalOptions="Center"/>
+
+    </Grid>
+
+</ContentPage>

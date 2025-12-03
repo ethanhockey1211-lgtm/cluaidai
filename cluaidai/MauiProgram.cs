@@ -35,12 +35,18 @@ namespace cluaidai
             builder.Services.AddTransient<FeedViewModel>();
             builder.Services.AddTransient<ProfileViewModel>();
             builder.Services.AddTransient<ChatViewModel>();
+            builder.Services.AddTransient<ConversationDetailViewModel>();
+            builder.Services.AddTransient<SearchViewModel>();
+            builder.Services.AddTransient<CreatePostViewModel>();
 
             // Register Pages
             builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<MainFeedPage>();
             builder.Services.AddTransient<ProfilePage>();
             builder.Services.AddTransient<ChatPage>();
+            builder.Services.AddTransient<ConversationDetailPage>();
+            builder.Services.AddTransient<SearchPage>();
+            builder.Services.AddTransient<CreatePostPage>();
 
             return builder.Build();
         }

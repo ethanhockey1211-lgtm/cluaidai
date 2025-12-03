@@ -4,69 +4,176 @@
              xmlns:vm="clr-namespace:cluaidai.ViewModels"
              x:Class="cluaidai.Views.LoginPage"
              x:DataType="vm:LoginViewModel"
-             BackgroundColor="{StaticResource DarkBackground}">
+             Shell.NavBarIsVisible="False">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20" VerticalOptions="Center">
+    <Grid>
+        <!-- Gradient Background -->
+        <BoxView>
+            <BoxView.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#0F0F12" Offset="0.0" />
+                    <GradientStop Color="#1a0a2e" Offset="0.5" />
+                    <GradientStop Color="#0F0F12" Offset="1.0" />
+                </LinearGradientBrush>
+            </BoxView.Background>
+        </BoxView>
 
-            <Label Text="Norta"
-                   FontSize="48"
-                   FontAttributes="Bold"
-                   TextColor="{StaticResource TextPrimary}"
-                   HorizontalOptions="Center"
-                   Margin="0,40,0,20"/>
+        <!-- Animated circles in background -->
+        <Grid>
+            <Ellipse Fill="#200EA5FF"
+                     WidthRequest="300"
+                     HeightRequest="300"
+                     HorizontalOptions="Start"
+                     VerticalOptions="Start"
+                     Margin="-100,-100,0,0"/>
+            <Ellipse Fill="#20FF2D55"
+                     WidthRequest="250"
+                     HeightRequest="250"
+                     HorizontalOptions="End"
+                     VerticalOptions="End"
+                     Margin="0,0,-80,-80"/>
+        </Grid>
 
-            <Frame Style="{StaticResource GlassCard}">
-                <VerticalStackLayout Spacing="16">
+        <ScrollView>
+            <VerticalStackLayout Padding="24" Spacing="24" VerticalOptions="Center">
 
-                    <Label Text="{Binding Title}"
-                           Style="{StaticResource PrimaryLabel}"
-                           FontSize="20"
+                <!-- Logo/Title Section -->
+                <VerticalStackLayout Spacing="8" Margin="0,60,0,40">
+                    <Label Text="Norta"
+                           FontSize="56"
                            FontAttributes="Bold"
+                           HorizontalOptions="Center">
+                        <Label.TextColor>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="{StaticResource AccentBlue}" Offset="0.0" />
+                                <GradientStop Color="{StaticResource AccentPink}" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Label.TextColor>
+                    </Label>
+                    <Label Text="Connect. Share. Inspire."
+                           FontSize="16"
+                           TextColor="{StaticResource TextSecondary}"
                            HorizontalOptions="Center"/>
-
-                    <Entry Placeholder="Email"
-                           Text="{Binding Email}"
-                           Keyboard="Email"
-                           Style="{StaticResource GlassEntry}"/>
-
-                    <Entry Placeholder="Password"
-                           Text="{Binding Password}"
-                           IsPassword="True"
-                           Style="{StaticResource GlassEntry}"/>
-
-                    <Entry Placeholder="Display Name"
-                           Text="{Binding DisplayName}"
-                           Style="{StaticResource GlassEntry}"
-                           IsVisible="{Binding IsRegisterMode}"/>
-
-                    <Label Text="{Binding ErrorMessage}"
-                           TextColor="{StaticResource AccentPink}"
-                           IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}"
-                           HorizontalOptions="Center"/>
-
-                    <Button Text="{Binding IsRegisterMode, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Register|Login'}"
-                            Command="{Binding LoginCommand}"
-                            Style="{StaticResource AccentButton}"
-                            IsVisible="{Binding IsRegisterMode, Converter={StaticResource InvertedBoolConverter}}"/>
-
-                    <Button Text="Register"
-                            Command="{Binding RegisterCommand}"
-                            Style="{StaticResource AccentButton}"
-                            IsVisible="{Binding IsRegisterMode}"/>
-
-                    <Button Text="{Binding IsRegisterMode, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Need an account? Register|Have an account? Login'}"
-                            Command="{Binding ToggleModeCommand}"
-                            Style="{StaticResource GlassButton}"/>
-
-                    <ActivityIndicator IsRunning="{Binding IsBusy}"
-                                      Color="{StaticResource AccentBlue}"
-                                      IsVisible="{Binding IsBusy}"/>
-
                 </VerticalStackLayout>
-            </Frame>
 
-        </VerticalStackLayout>
-    </ScrollView>
+                <!-- Login/Register Card -->
+                <Frame Style="{StaticResource GlassCard}" Padding="24">
+                    <VerticalStackLayout Spacing="18">
+
+                        <Label Text="{Binding Title}"
+                               Style="{StaticResource PrimaryLabel}"
+                               FontSize="24"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               Margin="0,0,0,8"/>
+
+                        <!-- Email Entry -->
+                        <Border StrokeShape="RoundRectangle 12"
+                                StrokeThickness="1"
+                                Stroke="{StaticResource GlassBorder}"
+                                BackgroundColor="{StaticResource GlassBackground}">
+                            <Entry Placeholder="Email"
+                                   Text="{Binding Email}"
+                                   Keyboard="Email"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   PlaceholderColor="{StaticResource TextSecondary}"
+                                   Margin="12,8"/>
+                        </Border>
+
+                        <!-- Password Entry -->
+                        <Border StrokeShape="RoundRectangle 12"
+                                StrokeThickness="1"
+                                Stroke="{StaticResource GlassBorder}"
+                                BackgroundColor="{StaticResource GlassBackground}">
+                            <Entry Placeholder="Password"
+                                   Text="{Binding Password}"
+                                   IsPassword="True"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   PlaceholderColor="{StaticResource TextSecondary}"
+                                   Margin="12,8"/>
+                        </Border>
+
+                        <!-- Display Name Entry (Register only) -->
+                        <Border StrokeShape="RoundRectangle 12"
+                                StrokeThickness="1"
+                                Stroke="{StaticResource GlassBorder}"
+                                BackgroundColor="{StaticResource GlassBackground}"
+                                IsVisible="{Binding IsRegisterMode}">
+                            <Entry Placeholder="Display Name"
+                                   Text="{Binding DisplayName}"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   PlaceholderColor="{StaticResource TextSecondary}"
+                                   Margin="12,8"/>
+                        </Border>
+
+                        <!-- Error Message -->
+                        <Label Text="{Binding ErrorMessage}"
+                               TextColor="{StaticResource AccentPink}"
+                               IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullOrEmptyConverter}}"
+                               HorizontalOptions="Center"
+                               FontSize="14"
+                               Margin="0,8,0,0"/>
+
+                        <!-- Login Button -->
+                        <Button Text="Sign In"
+                                Command="{Binding LoginCommand}"
+                                Style="{StaticResource AccentButton}"
+                                FontSize="16"
+                                HeightRequest="50"
+                                Margin="0,8,0,0"
+                                IsVisible="{Binding IsRegisterMode, Converter={StaticResource InvertedBoolConverter}}">
+                            <Button.Shadow>
+                                <Shadow Brush="{StaticResource AccentBlue}"
+                                        Offset="0,4"
+                                        Radius="20"
+                                        Opacity="0.4"/>
+                            </Button.Shadow>
+                        </Button>
+
+                        <!-- Register Button -->
+                        <Button Text="Create Account"
+                                Command="{Binding RegisterCommand}"
+                                Style="{StaticResource AccentButton}"
+                                FontSize="16"
+                                HeightRequest="50"
+                                Margin="0,8,0,0"
+                                IsVisible="{Binding IsRegisterMode}">
+                            <Button.Shadow>
+                                <Shadow Brush="{StaticResource AccentBlue}"
+                                        Offset="0,4"
+                                        Radius="20"
+                                        Opacity="0.4"/>
+                            </Button.Shadow>
+                        </Button>
+
+                        <!-- Toggle Mode Button -->
+                        <Button Text="{Binding IsRegisterMode, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Already have an account? Sign In|Need an account? Sign Up'}"
+                                Command="{Binding ToggleModeCommand}"
+                                Style="{StaticResource GlassButton}"
+                                FontSize="14"
+                                HeightRequest="44"/>
+
+                        <!-- Loading Indicator -->
+                        <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                          Color="{StaticResource AccentBlue}"
+                                          IsVisible="{Binding IsBusy}"
+                                          HeightRequest="40"
+                                          WidthRequest="40"
+                                          HorizontalOptions="Center"/>
+
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Footer -->
+                <Label Text="By continuing, you agree to our Terms of Service and Privacy Policy"
+                       FontSize="12"
+                       TextColor="{StaticResource TextSecondary}"
+                       HorizontalOptions="Center"
+                       HorizontalTextAlignment="Center"
+                       Margin="0,20,0,40"/>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 
 </ContentPage>

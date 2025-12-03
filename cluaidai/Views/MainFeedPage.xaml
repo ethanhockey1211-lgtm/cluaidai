@@ -8,90 +8,154 @@
              Title="Feed"
              BackgroundColor="{StaticResource DarkBackground}">
 
-    <RefreshView Command="{Binding RefreshCommand}"
-                 IsRefreshing="{Binding IsRefreshing}">
-        <CollectionView ItemsSource="{Binding Posts}"
-                       RemainingItemsThreshold="2"
-                       RemainingItemsThresholdReachedCommand="{Binding LoadMorePostsCommand}">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:Post">
-                    <Frame Style="{StaticResource GlassCard}">
-                        <Grid RowDefinitions="Auto,*,Auto,Auto" RowSpacing="12">
+    <Grid>
+        <RefreshView Command="{Binding RefreshCommand}"
+                     IsRefreshing="{Binding IsRefreshing}"
+                     RefreshColor="{StaticResource AccentBlue}">
+            <CollectionView ItemsSource="{Binding Posts}"
+                           RemainingItemsThreshold="2"
+                           RemainingItemsThresholdReachedCommand="{Binding LoadMorePostsCommand}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Post">
+                        <Frame Style="{StaticResource GlassCard}" Margin="12,8">
+                            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="14">
 
-                            <!-- User Header -->
-                            <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                                <Border StrokeShape="RoundRectangle 20"
+                                <!-- User Header -->
+                                <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                    <Border StrokeShape="RoundRectangle 22"
+                                           StrokeThickness="0"
+                                           HeightRequest="44"
+                                           WidthRequest="44">
+                                        <Image Source="{Binding User.AvatarUrl}"
+                                              Aspect="AspectFill"/>
+                                    </Border>
+
+                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                        <Label Text="{Binding User.DisplayName}"
+                                              Style="{StaticResource PrimaryLabel}"
+                                              FontSize="16"
+                                              FontAttributes="Bold"/>
+                                        <Label Text="{Binding CreatedAt, StringFormat='{0:MMM dd, yyyy • HH:mm}'}"
+                                              Style="{StaticResource SecondaryLabel}"
+                                              FontSize="12"/>
+                                    </VerticalStackLayout>
+
+                                    <Label Grid.Column="2"
+                                          Text="•••"
+                                          Style="{StaticResource PrimaryLabel}"
+                                          FontSize="20"
+                                          VerticalOptions="Center"/>
+                                </Grid>
+
+                                <!-- Caption (if no image, show first) -->
+                                <Label Grid.Row="1"
+                                      Text="{Binding Caption}"
+                                      Style="{StaticResource PrimaryLabel}"
+                                      FontSize="15"
+                                      LineBreakMode="WordWrap"
+                                      IsVisible="{Binding ImageUrl, Converter={StaticResource InvertedBoolConverter}}"/>
+
+                                <!-- Post Image -->
+                                <Border Grid.Row="2"
+                                       StrokeShape="RoundRectangle 16"
                                        StrokeThickness="0"
-                                       HeightRequest="40"
-                                       WidthRequest="40">
-                                    <Image Source="{Binding User.AvatarUrl}"
+                                       HeightRequest="350"
+                                       IsVisible="{Binding ImageUrl, Converter={StaticResource IsNotNullOrEmptyConverter}}">
+                                    <Image Source="{Binding ImageUrl}"
                                           Aspect="AspectFill"/>
                                 </Border>
 
-                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
-                                    <Label Text="{Binding User.DisplayName}"
-                                          Style="{StaticResource PrimaryLabel}"
-                                          FontAttributes="Bold"/>
-                                    <Label Text="{Binding CreatedAt, StringFormat='{0:MMM dd, yyyy}'}"
-                                          Style="{StaticResource SecondaryLabel}"
-                                          FontSize="12"/>
-                                </VerticalStackLayout>
-                            </Grid>
-
-                            <!-- Post Image -->
-                            <Border Grid.Row="1"
-                                   StrokeShape="RoundRectangle 12"
-                                   StrokeThickness="0"
-                                   HeightRequest="300"
-                                   IsVisible="{Binding ImageUrl, Converter={StaticResource IsNotNullOrEmptyConverter}}">
-                                <Image Source="{Binding ImageUrl}"
-                                      Aspect="AspectFill"/>
-                            </Border>
-
-                            <!-- Actions -->
-                            <HorizontalStackLayout Grid.Row="2" Spacing="16">
-                                <Button Text="{Binding IsLiked, Converter={StaticResource BoolToTextConverter}, ConverterParameter='❤️|🤍'}"
-                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FeedViewModel}}, Path=ToggleLikeCommand}"
-                                       CommandParameter="{Binding .}"
-                                       BackgroundColor="Transparent"
-                                       TextColor="{StaticResource TextPrimary}"
-                                       FontSize="20"
-                                       Padding="0"/>
-
-                                <Label Text="{Binding LikesCount, StringFormat='{0} likes'}"
+                                <!-- Caption (if image, show after) -->
+                                <Label Grid.Row="3"
+                                      Text="{Binding Caption}"
                                       Style="{StaticResource PrimaryLabel}"
-                                      VerticalOptions="Center"/>
+                                      FontSize="15"
+                                      LineBreakMode="WordWrap"
+                                      IsVisible="{Binding ImageUrl, Converter={StaticResource IsNotNullOrEmptyConverter}}"/>
 
-                                <Label Text="{Binding CommentsCount, StringFormat='{0} comments'}"
-                                      Style="{StaticResource SecondaryLabel}"
-                                      VerticalOptions="Center"
-                                      Margin="12,0,0,0"/>
-                            </HorizontalStackLayout>
+                                <!-- Actions -->
+                                <Grid Grid.Row="4" ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="8">
+                                    <Button Grid.Column="0"
+                                           Text="{Binding IsLiked, Converter={StaticResource BoolToTextConverter}, ConverterParameter='❤️|🤍'}"
+                                           Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FeedViewModel}}, Path=ToggleLikeCommand}"
+                                           CommandParameter="{Binding .}"
+                                           BackgroundColor="Transparent"
+                                           TextColor="{StaticResource TextPrimary}"
+                                           FontSize="24"
+                                           Padding="0"
+                                           WidthRequest="40"/>
 
-                            <!-- Caption -->
-                            <Label Grid.Row="3"
-                                  Text="{Binding Caption}"
-                                  Style="{StaticResource PrimaryLabel}"
-                                  LineBreakMode="WordWrap"/>
+                                    <Label Grid.Column="1"
+                                          Text="{Binding LikesCount, StringFormat='{0} likes'}"
+                                          Style="{StaticResource PrimaryLabel}"
+                                          FontSize="14"
+                                          FontAttributes="Bold"
+                                          VerticalOptions="Center"/>
 
-                        </Grid>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
+                                    <Label Grid.Column="3"
+                                          Text="{Binding CommentsCount, StringFormat='💬 {0}'}"
+                                          Style="{StaticResource SecondaryLabel}"
+                                          FontSize="14"
+                                          VerticalOptions="Center"/>
+                                </Grid>
 
-            <CollectionView.EmptyView>
-                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="12">
-                    <Label Text="No posts yet!"
-                          Style="{StaticResource PrimaryLabel}"
-                          FontSize="20"
-                          HorizontalOptions="Center"/>
-                    <Label Text="Follow some users to see their posts here"
-                          Style="{StaticResource SecondaryLabel}"
-                          HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-            </CollectionView.EmptyView>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
 
-        </CollectionView>
-    </RefreshView>
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       Spacing="16"
+                                       Padding="40">
+                        <Label Text="📱"
+                              FontSize="72"
+                              HorizontalOptions="Center"/>
+                        <Label Text="No posts yet!"
+                              Style="{StaticResource PrimaryLabel}"
+                              FontSize="22"
+                              FontAttributes="Bold"
+                              HorizontalOptions="Center"/>
+                        <Label Text="Follow some users to see their posts here"
+                              Style="{StaticResource SecondaryLabel}"
+                              FontSize="16"
+                              HorizontalTextAlignment="Center"
+                              HorizontalOptions="Center"/>
+                        <Button Text="Find People"
+                               Command="{Binding NavigateToSearchCommand}"
+                               Style="{StaticResource AccentButton}"
+                               Margin="0,20,0,0"/>
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+            </CollectionView>
+        </RefreshView>
+
+        <!-- Floating Action Button -->
+        <Border StrokeShape="RoundRectangle 32"
+               BackgroundColor="{StaticResource AccentBlue}"
+               HeightRequest="64"
+               WidthRequest="64"
+               HorizontalOptions="End"
+               VerticalOptions="End"
+               Margin="24">
+            <Border.Shadow>
+                <Shadow Brush="{StaticResource AccentBlue}"
+                       Offset="0,8"
+                       Radius="24"
+                       Opacity="0.6"/>
+            </Border.Shadow>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding CreatePostCommand}"/>
+            </Border.GestureRecognizers>
+            <Label Text="+"
+                  TextColor="White"
+                  FontSize="32"
+                  FontAttributes="Bold"
+                  HorizontalOptions="Center"
+                  VerticalOptions="Center"/>
+        </Border>
+    </Grid>
 
 </ContentPage>

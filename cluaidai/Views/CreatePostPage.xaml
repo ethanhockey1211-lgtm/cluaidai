@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:cluaidai.ViewModels"
+             x:Class="cluaidai.Views.CreatePostPage"
+             x:DataType="vm:CreatePostViewModel"
+             Title="Create Post"
+             BackgroundColor="{StaticResource DarkBackground}">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Header Buttons -->
+        <Frame Grid.Row="0" Style="{StaticResource GlassCard}" Margin="12" Padding="12">
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                <Button Grid.Column="0"
+                       Text="Cancel"
+                       Command="{Binding CancelCommand}"
+                       Style="{StaticResource GlassButton}"
+                       FontSize="15"/>
+                <Button Grid.Column="1"
+                       Text="Post"
+                       Command="{Binding CreatePostCommand}"
+                       Style="{StaticResource AccentButton}"
+                       FontSize="15">
+                    <Button.Shadow>
+                        <Shadow Brush="{StaticResource AccentBlue}"
+                               Offset="0,4"
+                               Radius="20"
+                               Opacity="0.4"/>
+                    </Button.Shadow>
+                </Button>
+            </Grid>
+        </Frame>
+
+        <!-- Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="16" Padding="12">
+
+                <!-- Caption Input -->
+                <Frame Style="{StaticResource GlassCard}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Caption"
+                              Style="{StaticResource PrimaryLabel}"
+                              FontSize="16"
+                              FontAttributes="Bold"/>
+                        <Border StrokeShape="RoundRectangle 12"
+                               StrokeThickness="1"
+                               Stroke="{StaticResource GlassBorder}"
+                               BackgroundColor="{StaticResource GlassBackground}">
+                            <Editor Placeholder="What's on your mind?"
+                                   Text="{Binding Caption}"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   PlaceholderColor="{StaticResource TextSecondary}"
+                                   AutoSize="TextChanges"
+                                   MinimumHeightRequest="100"
+                                   Margin="12"/>
+                        </Border>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Image Section -->
+                <Frame Style="{StaticResource GlassCard}">
+                    <VerticalStackLayout Spacing="12">
+
+                        <Label Text="Photo"
+                              Style="{StaticResource PrimaryLabel}"
+                              FontSize="16"
+                              FontAttributes="Bold"/>
+
+                        <!-- Image Preview -->
+                        <Border StrokeShape="RoundRectangle 12"
+                               StrokeThickness="0"
+                               HeightRequest="300"
+                               IsVisible="{Binding HasImage}">
+                            <Grid>
+                                <Image Source="{Binding ImageUrl}"
+                                      Aspect="AspectFill"/>
+
+                                <!-- Remove Button -->
+                                <Border StrokeShape="RoundRectangle 20"
+                                       BackgroundColor="{StaticResource AccentPink}"
+                                       HeightRequest="40"
+                                       WidthRequest="40"
+                                       HorizontalOptions="End"
+                                       VerticalOptions="Start"
+                                       Margin="12">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding RemoveImageCommand}"/>
+                                    </Border.GestureRecognizers>
+                                    <Label Text="✕"
+                                          TextColor="White"
+                                          FontSize="20"
+                                          FontAttributes="Bold"
+                                          HorizontalOptions="Center"
+                                          VerticalOptions="Center"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- Image Picker Buttons -->
+                        <Grid ColumnDefinitions="*,*"
+                             ColumnSpacing="12"
+                             IsVisible="{Binding HasImage, Converter={StaticResource InvertedBoolConverter}}">
+                            <Button Grid.Column="0"
+                                   Text="📷 Camera"
+                                   Command="{Binding TakePhotoCommand}"
+                                   Style="{StaticResource GlassButton}"
+                                   FontSize="15"/>
+                            <Button Grid.Column="1"
+                                   Text="🖼️ Gallery"
+                                   Command="{Binding PickImageCommand}"
+                                   Style="{StaticResource GlassButton}"
+                                   FontSize="15"/>
+                        </Grid>
+
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Tips -->
+                <Frame Style="{StaticResource GlassCard}" Padding="16">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="💡 Tips for great posts"
+                              Style="{StaticResource PrimaryLabel}"
+                              FontSize="14"
+                              FontAttributes="Bold"/>
+                        <Label Style="{StaticResource SecondaryLabel}" FontSize="13">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="• Use high-quality images&#x0a;"/>
+                                    <Span Text="• Write engaging captions&#x0a;"/>
+                                    <Span Text="• Be authentic and creative&#x0a;"/>
+                                    <Span Text="• Share moments that matter"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </VerticalStackLayout>
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Loading Indicator -->
+        <ActivityIndicator Grid.Row="1"
+                          IsRunning="{Binding IsPosting}"
+                          Color="{StaticResource AccentBlue}"
+                          IsVisible="{Binding IsPosting}"
+                          HeightRequest="50"
+                          WidthRequest="50"
+                          HorizontalOptions="Center"
+                          VerticalOptions="Center"/>
+
+    </Grid>
+
+</ContentPage>

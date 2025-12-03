@@ -1,11 +1,127 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:cluaidai.ViewModels"
+             xmlns:models="clr-namespace:cluaidai.Models"
              x:Class="cluaidai.Views.ChatPage"
+             x:DataType="vm:ChatViewModel"
              Title="Messages"
              BackgroundColor="{StaticResource DarkBackground}">
-    <Label Text="Chat Page - Coming Soon"
-           Style="{StaticResource PrimaryLabel}"
-           HorizontalOptions="Center"
-           VerticalOptions="Center"/>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Search/New Message Button -->
+        <Frame Grid.Row="0" Style="{StaticResource GlassCard}" Margin="12,12,12,8">
+            <Button Text="✉️ New Message"
+                    Command="{Binding SearchUsersCommand}"
+                    Style="{StaticResource AccentButton}"
+                    FontSize="16"
+                    HeightRequest="50"/>
+        </Frame>
+
+        <!-- Conversations List -->
+        <CollectionView Grid.Row="1"
+                       ItemsSource="{Binding Conversations}"
+                       SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Conversation">
+                    <Frame Style="{StaticResource GlassCard}" Margin="12,4">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ChatViewModel}}, Path=OpenConversationCommand}"
+                                CommandParameter="{Binding .}"/>
+                        </Frame.GestureRecognizers>
+
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+
+                            <!-- Avatar -->
+                            <Border StrokeShape="RoundRectangle 28"
+                                   StrokeThickness="0"
+                                   HeightRequest="56"
+                                   WidthRequest="56">
+                                <Image Source="{Binding OtherUser.AvatarUrl}"
+                                      Aspect="AspectFill"/>
+                            </Border>
+
+                            <!-- Conversation Info -->
+                            <VerticalStackLayout Grid.Column="1"
+                                               VerticalOptions="Center"
+                                               Spacing="4">
+                                <Label Text="{Binding OtherUser.DisplayName}"
+                                      Style="{StaticResource PrimaryLabel}"
+                                      FontSize="16"
+                                      FontAttributes="Bold"/>
+                                <Label Text="{Binding LastMessage.Text}"
+                                      Style="{StaticResource SecondaryLabel}"
+                                      FontSize="14"
+                                      LineBreakMode="TailTruncation"
+                                      MaxLines="1"/>
+                            </VerticalStackLayout>
+
+                            <!-- Metadata -->
+                            <VerticalStackLayout Grid.Column="2"
+                                               VerticalOptions="Center"
+                                               HorizontalOptions="End"
+                                               Spacing="4">
+                                <Label Text="{Binding LastMessage.SentAt, StringFormat='{0:HH:mm}'}"
+                                      Style="{StaticResource SecondaryLabel}"
+                                      FontSize="12"
+                                      HorizontalOptions="End"/>
+
+                                <!-- Unread Badge -->
+                                <Border StrokeShape="RoundRectangle 10"
+                                       BackgroundColor="{StaticResource AccentPink}"
+                                       Padding="8,4"
+                                       HorizontalOptions="End"
+                                       IsVisible="{Binding UnreadCount, Converter={StaticResource IsNotNullOrEmptyConverter}}">
+                                    <Label Text="{Binding UnreadCount}"
+                                          TextColor="White"
+                                          FontSize="11"
+                                          FontAttributes="Bold"/>
+                                </Border>
+                            </VerticalStackLayout>
+
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   Spacing="16"
+                                   Padding="40">
+                    <Label Text="💬"
+                          FontSize="72"
+                          HorizontalOptions="Center"/>
+                    <Label Text="No conversations yet"
+                          Style="{StaticResource PrimaryLabel}"
+                          FontSize="20"
+                          FontAttributes="Bold"
+                          HorizontalOptions="Center"/>
+                    <Label Text="Start chatting with friends!"
+                          Style="{StaticResource SecondaryLabel}"
+                          FontSize="16"
+                          HorizontalOptions="Center"/>
+                    <Button Text="Find People"
+                           Command="{Binding SearchUsersCommand}"
+                           Style="{StaticResource AccentButton}"
+                           Margin="0,20,0,0"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+        </CollectionView>
+
+        <!-- Loading Indicator -->
+        <ActivityIndicator Grid.Row="1"
+                          IsRunning="{Binding IsLoadingConversations}"
+                          Color="{StaticResource AccentBlue}"
+                          IsVisible="{Binding IsLoadingConversations}"
+                          HeightRequest="50"
+                          WidthRequest="50"
+                          HorizontalOptions="Center"
+                          VerticalOptions="Center"/>
+
+    </Grid>
+
 </ContentPage>

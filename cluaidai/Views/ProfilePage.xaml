@@ -1,11 +1,187 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:cluaidai.ViewModels"
+             xmlns:models="clr-namespace:cluaidai.Models"
              x:Class="cluaidai.Views.ProfilePage"
+             x:DataType="vm:ProfileViewModel"
              Title="Profile"
              BackgroundColor="{StaticResource DarkBackground}">
-    <Label Text="Profile Page - Coming Soon"
-           Style="{StaticResource PrimaryLabel}"
-           HorizontalOptions="Center"
-           VerticalOptions="Center"/>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="0">
+
+            <!-- Profile Header -->
+            <Frame Style="{StaticResource GlassCard}" Margin="12,12,12,8">
+                <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="20">
+
+                    <!-- Avatar and Stats -->
+                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="20">
+
+                        <!-- Avatar -->
+                        <Border StrokeShape="RoundRectangle 50"
+                                StrokeThickness="3"
+                                HeightRequest="100"
+                                WidthRequest="100"
+                                HorizontalOptions="Start">
+                            <Border.Stroke>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="{StaticResource AccentBlue}" Offset="0.0" />
+                                    <GradientStop Color="{StaticResource AccentPink}" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Border.Stroke>
+                            <Image Source="{Binding CurrentUser.AvatarUrl}"
+                                   Aspect="AspectFill">
+                                <Image.Clip>
+                                    <EllipseGeometry Center="50,50" RadiusX="50" RadiusY="50"/>
+                                </Image.Clip>
+                            </Image>
+                        </Border>
+
+                        <!-- Stats -->
+                        <HorizontalStackLayout Grid.Column="1"
+                                              Spacing="24"
+                                              HorizontalOptions="Center"
+                                              VerticalOptions="Center">
+
+                            <!-- Posts Count -->
+                            <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                                <Label Text="{Binding CurrentUser.PostsCount}"
+                                       Style="{StaticResource PrimaryLabel}"
+                                       FontSize="24"
+                                       FontAttributes="Bold"
+                                       HorizontalOptions="Center"/>
+                                <Label Text="Posts"
+                                       Style="{StaticResource SecondaryLabel}"
+                                       FontSize="14"
+                                       HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+
+                            <!-- Followers Count -->
+                            <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                                <Label Text="{Binding CurrentUser.FollowersCount}"
+                                       Style="{StaticResource PrimaryLabel}"
+                                       FontSize="24"
+                                       FontAttributes="Bold"
+                                       HorizontalOptions="Center"/>
+                                <Label Text="Followers"
+                                       Style="{StaticResource SecondaryLabel}"
+                                       FontSize="14"
+                                       HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+
+                            <!-- Following Count -->
+                            <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                                <Label Text="{Binding CurrentUser.FollowingCount}"
+                                       Style="{StaticResource PrimaryLabel}"
+                                       FontSize="24"
+                                       FontAttributes="Bold"
+                                       HorizontalOptions="Center"/>
+                                <Label Text="Following"
+                                       Style="{StaticResource SecondaryLabel}"
+                                       FontSize="14"
+                                       HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+
+                        </HorizontalStackLayout>
+                    </Grid>
+
+                    <!-- User Info -->
+                    <VerticalStackLayout Grid.Row="1" Spacing="8">
+                        <Label Text="{Binding CurrentUser.DisplayName}"
+                               Style="{StaticResource PrimaryLabel}"
+                               FontSize="20"
+                               FontAttributes="Bold"/>
+                        <Label Text="{Binding CurrentUser.Bio}"
+                               Style="{StaticResource SecondaryLabel}"
+                               FontSize="14"
+                               LineBreakMode="WordWrap"
+                               IsVisible="{Binding CurrentUser.Bio, Converter={StaticResource IsNotNullOrEmptyConverter}}"/>
+                    </VerticalStackLayout>
+
+                    <!-- Action Buttons -->
+                    <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <Button Grid.Column="0"
+                                Text="Edit Profile"
+                                Command="{Binding EditProfileCommand}"
+                                Style="{StaticResource GlassButton}"
+                                FontSize="14"/>
+                        <Button Grid.Column="1"
+                                Text="Logout"
+                                Command="{Binding LogoutCommand}"
+                                BackgroundColor="{StaticResource AccentPink}"
+                                TextColor="White"
+                                CornerRadius="12"
+                                FontSize="14"
+                                FontAttributes="Bold"/>
+                    </Grid>
+
+                </Grid>
+            </Frame>
+
+            <!-- Posts Grid Header -->
+            <Frame Style="{StaticResource GlassCard}" Margin="12,8,12,0" Padding="12">
+                <Label Text="My Posts"
+                       Style="{StaticResource PrimaryLabel}"
+                       FontSize="18"
+                       FontAttributes="Bold"/>
+            </Frame>
+
+            <!-- Posts Grid -->
+            <CollectionView ItemsSource="{Binding UserPosts}"
+                           Margin="12,8,12,12">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical"
+                                    Span="3"
+                                    HorizontalItemSpacing="4"
+                                    VerticalItemSpacing="4"/>
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Post">
+                        <Border StrokeShape="RoundRectangle 8"
+                               StrokeThickness="0"
+                               HeightRequest="120"
+                               WidthRequest="120"
+                               Aspect="AspectFill">
+                            <Image Source="{Binding ImageUrl}"
+                                   Aspect="AspectFill"/>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <CollectionView.EmptyView>
+                    <Frame Style="{StaticResource GlassCard}" Padding="40">
+                        <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                            <Label Text="📸"
+                                   FontSize="48"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="No posts yet"
+                                   Style="{StaticResource PrimaryLabel}"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Start sharing your moments!"
+                                   Style="{StaticResource SecondaryLabel}"
+                                   FontSize="14"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                </CollectionView.EmptyView>
+
+            </CollectionView>
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator IsRunning="{Binding IsLoadingProfile}"
+                              Color="{StaticResource AccentBlue}"
+                              IsVisible="{Binding IsLoadingProfile}"
+                              HeightRequest="50"
+                              WidthRequest="50"
+                              HorizontalOptions="Center"
+                              VerticalOptions="Center"
+                              Margin="0,40"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
 </ContentPage>

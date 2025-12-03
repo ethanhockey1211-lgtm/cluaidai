@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:cluaidai.ViewModels"
+             xmlns:models="clr-namespace:cluaidai.Models"
+             x:Class="cluaidai.Views.ConversationDetailPage"
+             x:DataType="vm:ConversationDetailViewModel"
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource DarkBackground}">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <!-- Messages List -->
+        <CollectionView Grid.Row="0"
+                       ItemsSource="{Binding Messages}"
+                       SelectionMode="None"
+                       VerticalScrollBarVisibility="Always">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Message">
+                    <Grid Padding="12,4">
+
+                        <!-- Sent Message -->
+                        <Frame Style="{StaticResource GlassCard}"
+                               Padding="12"
+                               Margin="60,0,12,0"
+                               HorizontalOptions="End"
+                               BackgroundColor="{StaticResource AccentBlue}"
+                               BorderColor="{StaticResource AccentBlue}"
+                               IsVisible="{Binding IsFromCurrentUser}">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding Text}"
+                                      TextColor="White"
+                                      FontSize="15"
+                                      LineBreakMode="WordWrap"/>
+                                <Label Text="{Binding SentAt, StringFormat='{0:HH:mm}'}"
+                                      TextColor="#E0FFFFFF"
+                                      FontSize="11"
+                                      HorizontalOptions="End"/>
+                            </VerticalStackLayout>
+                        </Frame>
+
+                        <!-- Received Message -->
+                        <Frame Style="{StaticResource GlassCard}"
+                               Padding="12"
+                               Margin="12,0,60,0"
+                               HorizontalOptions="Start"
+                               IsVisible="{Binding IsFromCurrentUser, Converter={StaticResource InvertedBoolConverter}}">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding Text}"
+                                      Style="{StaticResource PrimaryLabel}"
+                                      FontSize="15"
+                                      LineBreakMode="WordWrap"/>
+                                <Label Text="{Binding SentAt, StringFormat='{0:HH:mm}'}"
+                                      Style="{StaticResource SecondaryLabel}"
+                                      FontSize="11"
+                                      HorizontalOptions="End"/>
+                            </VerticalStackLayout>
+                        </Frame>
+
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   Spacing="12">
+                    <Label Text="👋"
+                          FontSize="48"
+                          HorizontalOptions="Center"/>
+                    <Label Text="No messages yet"
+                          Style="{StaticResource PrimaryLabel}"
+                          FontSize="16"
+                          HorizontalOptions="Center"/>
+                    <Label Text="Send a message to start the conversation"
+                          Style="{StaticResource SecondaryLabel}"
+                          FontSize="14"
+                          HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+        </CollectionView>
+
+        <!-- Message Input -->
+        <Frame Grid.Row="1"
+               Style="{StaticResource GlassCard}"
+               Margin="12"
+               Padding="8">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+
+                <!-- Text Entry -->
+                <Border Grid.Column="0"
+                       StrokeShape="RoundRectangle 20"
+                       StrokeThickness="1"
+                       Stroke="{StaticResource GlassBorder}"
+                       BackgroundColor="{StaticResource GlassBackground}">
+                    <Entry Placeholder="Type a message..."
+                          Text="{Binding MessageText}"
+                          TextColor="{StaticResource TextPrimary}"
+                          PlaceholderColor="{StaticResource TextSecondary}"
+                          Margin="12,0"
+                          VerticalOptions="Center"
+                          ReturnCommand="{Binding SendMessageCommand}"/>
+                </Border>
+
+                <!-- Send Button -->
+                <Border Grid.Column="1"
+                       StrokeShape="RoundRectangle 24"
+                       BackgroundColor="{StaticResource AccentBlue}"
+                       HeightRequest="48"
+                       WidthRequest="48"
+                       VerticalOptions="Center">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SendMessageCommand}"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="➤"
+                          TextColor="White"
+                          FontSize="20"
+                          FontAttributes="Bold"
+                          HorizontalOptions="Center"
+                          VerticalOptions="Center"
+                          Rotation="0"
+                          IsVisible="{Binding IsSending, Converter={StaticResource InvertedBoolConverter}}"/>
+                    <ActivityIndicator IsRunning="{Binding IsSending}"
+                                      Color="White"
+                                      IsVisible="{Binding IsSending}"
+                                      HeightRequest="24"
+                                      WidthRequest="24"/>
+                </Border>
+
+            </Grid>
+        </Frame>
+
+        <!-- Loading Indicator -->
+        <ActivityIndicator Grid.Row="0"
+                          IsRunning="{Binding IsLoadingMessages}"
+                          Color="{StaticResource AccentBlue}"
+                          IsVisible="{Binding IsLoadingMessages}"
+                          HeightRequest="50"
+                          WidthRequest="50"
+                          HorizontalOptions="Center"
+                          VerticalOptions="Center"/>
+
+    </Grid>
+
+</ContentPage>

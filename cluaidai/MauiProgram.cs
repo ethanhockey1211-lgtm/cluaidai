@@ -1,4 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using CommunityToolkit.Maui;
+using cluaidai.Services;
+using cluaidai.ViewModels;
+using cluaidai.Views;
 
 namespace cluaidai
 {
@@ -9,6 +13,7 @@ namespace cluaidai
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -18,6 +23,24 @@ namespace cluaidai
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
+
+            // Register Services
+            builder.Services.AddSingleton<AuthService>();
+            builder.Services.AddSingleton<SignalRService>();
+            builder.Services.AddSingleton<HttpClient>();
+            builder.Services.AddSingleton<ApiService>();
+
+            // Register ViewModels
+            builder.Services.AddTransient<LoginViewModel>();
+            builder.Services.AddTransient<FeedViewModel>();
+            builder.Services.AddTransient<ProfileViewModel>();
+            builder.Services.AddTransient<ChatViewModel>();
+
+            // Register Pages
+            builder.Services.AddTransient<LoginPage>();
+            builder.Services.AddTransient<MainFeedPage>();
+            builder.Services.AddTransient<ProfilePage>();
+            builder.Services.AddTransient<ChatPage>();
 
             return builder.Build();
         }
